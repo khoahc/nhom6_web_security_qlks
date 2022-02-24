@@ -422,6 +422,36 @@ public class BookingDao {
 		return bookings;
 	}
 	
+	public List<Booking> getBookingPaidByIdUser(int idUser) {
+		Session session = HibernateUtils.getFactory().openSession();
+		
+		Query q = session.createQuery("FROM Booking "
+				+ "WHERE user.id LIKE :idUser "
+				+ "AND hoaDon is null");//HQL
+		
+		q.setParameter("idUser",  idUser );
+		
+		List<Booking> bookings = q.getResultList();		
+		session.close();
+		
+		return bookings;
+	}
+	
+	public List<Booking> getBookingUnPaidByIdUser(int idUser) {
+		Session session = HibernateUtils.getFactory().openSession();
+		
+		Query q = session.createQuery("FROM Booking "
+				+ "WHERE user.id LIKE :idUser "
+				+ "AND hoaDon is null");//HQL
+		
+		q.setParameter("idUser",  idUser );
+		
+		List<Booking> bookings = q.getResultList();		
+		session.close();
+		
+		return bookings;
+	}
+	
 	private boolean checkRoomBooked(int idPhong, Date checkIn, Date checkOut) {
 		Session session = HibernateUtils.getFactory().openSession();
 		Query q = session.createQuery("FROM Booking WHERE checkIn=:checkin");//HQL

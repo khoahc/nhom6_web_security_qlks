@@ -6,44 +6,130 @@
 <div class="container" style="min-height:500px">
 <h1 class="text-center mt-5 text-info display-4 font-weight-bold">Lịch sử đặt phòng</h1>
 
-<table class="table mt-5 h3 ">
-    <tr>
-        <th>Mã booking</th>
-        <th>Phòng</th>
-        <th>Số người</th>
-        <th>Check-in</th>
-        <th>Check-out</th>
-        <th>Đơn giá</th>
-        <th></th>
-    </tr>
+<ul class="nav nav-tabs">
+	<li class="nav-item">							
+		<a class="nav-link active" href="javascript:void(0);" onclick="getUnpaidBookingHistory()">Chưa thanh toán</a>
+	</li>								
+	
+	<li class="nav-item">
+		<a class="nav-link" href="javascript:void(0);" onclick="getPaidBookingHistory()">Đã thanh toán</a>
+	</li>
+													   
+</ul>
 
-	<%User user = (User) session.getAttribute("user");%>
-	<% if (user != null) { %>
-		<c:choose>
-			<c:when test="${numBooking == 0}">
-		        <tr>
-		            <td colspan="7" class="text-center">Không có booking nào</td>
-		        </tr>
-	   		 </c:when>
-	   		 <c:otherwise>
-		   		<c:forEach items="${bookings}" var="booking">				       
-			        <tr id="booking-id">
-			            <td> <c:out value = "${booking.getIdBooking()}"/></td>				         
-			            <td> <c:out value = "${booking.getPhong().getTenPhong()}"/></td>				         
-			            <td> <c:out value = "${booking.getSoNguoi()}"/></td>				         
-			            <td><fmt:formatDate pattern = "yyyy-MM-dd" value="${booking.getCheckIn()}"/></td>			         
-			            <td><fmt:formatDate pattern = "yyyy-MM-dd" value="${booking.getCheckOut()}"/></td>			        
-			            
-			        	<td>
-			        		<fmt:setLocale value = "vi_VN"/>
-			        		<fmt:formatNumber value="${booking.getPhong().getLoaiPhong().getDonGia()}" type="currency"  maxFractionDigits = "0"/>
-			        	</td>
+<div class="table-responsive">
+	<table class="table mt-5 h3 ">
+	<thead>
+		<tr>
+	    	<th>
+	    		<!-- <input type="checkbox"> -->
+	    	</th>
+	        <th>Mã booking</th>
+	        <th>Phòng</th>
+	        <th>Số người</th>
+	        <th>Check-in</th>
+	        <th>Check-out</th>
+	        <th>Đơn giá</th>
+	        <th></th>
+	    </tr>
+	</thead>
+	<tbody id="tb-booking-history">
+	    <%-- <%User user = (User) session.getAttribute("user");%>
+		<% if (user != null) { %>
+			<c:choose>
+				<c:when test="${numBooking == 0}">
+			        <tr>
+			            <td colspan="7" class="text-center">Không có booking nào</td>
 			        </tr>
-				</c:forEach> 
-	   		 </c:otherwise>			
-		</c:choose>
+		   		 </c:when>
+		   		 <c:otherwise>
+			   		<c:forEach items="${bookings}" var="booking">				       
+				        <tr id="booking-id">
+				        	<td>
+				        		<input type="checkbox" class="form-check-input" value="">
+				        	</td>
+				            <td> <c:out value = "${booking.getIdBooking()}"/></td>				         
+				            <td> <c:out value = "${booking.getPhong().getTenPhong()}"/></td>				         
+				            <td> <c:out value = "${booking.getSoNguoi()}"/></td>				         
+				            <td><fmt:formatDate pattern = "yyyy-MM-dd" value="${booking.getCheckIn()}"/></td>			         
+				            <td><fmt:formatDate pattern = "yyyy-MM-dd" value="${booking.getCheckOut()}"/></td>			        
+				            
+				        	<td>
+				        		<fmt:setLocale value = "vi_VN"/>
+				        		<fmt:formatNumber value="${booking.getPhong().getLoaiPhong().getDonGia()}" type="currency"  maxFractionDigits = "0"/>
+				        	</td>
+				        </tr>
+					</c:forEach> 
+		   		 </c:otherwise>			
+			</c:choose>
+			
+	    <% } %> --%>
+	</tbody>
+	
+	<script>
+		function getBookingHistory(statusPay) {
+			let table = document.getElementById("tb-booking-history");
+		    table.innerHTML = '';
+		    
+		    let url = "<%=request.getContextPath()%>/aip/customer-booking-history?pay=" + statusPay;
+		    
+			$.get(
+					url,
+					function(data){
+						if (data.length == 0) {
+							table.innerHTML = '<tr><td colspan="7" class="text-center">Không có booking nào</td></tr>';
+						}
+					    for (let i = 0; i < data.length; i++) {
+					        let r = table.insertRow(i);
+					        
+					        let checkBox = document.createElement('input');
+					        checkBox.type = 'checkbox';
+							if (statusPay == 'paid') {
+								checkBox.hidden = true;
+							}
+					        
+							let count = 0;
+							
+					        r.insertCell(count++).appendChild(checkBox);
+					        r.insertCell(count++).innerText = data[i].idBooking;
+					        r.insertCell(count++).innerText = data[i].tenPhong;
+					        r.insertCell(count++).innerText = data[i].soNguoi;
+					        r.insertCell(count++).innerText = data[i].checkIn;
+					        r.insertCell(count++).innerText = data[i].checkOut;
+					        r.insertCell(count++).innerText = data[i].donGia;
+					    }
+					});
+		}
 		
-    <% } %>
-</table>
+		function getPaidBookingHistory() {
+			document.querySelector("body > div > div > ul > li:nth-child(1) > a").classList.remove("active");
+			document.querySelector("body > div > div > ul > li:nth-child(2) > a").classList.add("active");
+			getBookingHistory('paid');
+		}
+		
+		function getUnpaidBookingHistory() {
+			document.querySelector("body > div > div > ul > li:nth-child(1) > a").classList.add("active");
+			document.querySelector("body > div > div > ul > li:nth-child(2) > a").classList.remove("active");
+			getBookingHistory('unpaid');
+		}
+		
+		function payBooking() {
+			let table = document.getElementById("tb-booking-history");
+		    
+		    table.childNodes.forEach((item, index, arr) => {
+		    	if (item.childNodes[0].childNodes[0].checked == true) {
+		    		console.log('true');
+		    	}
+		    });
+		}
+		
+		getUnpaidBookingHistory();
+		
+	</script>
+	    
+	</table>
+</div>
+
+<button onclick="payBooking()">Thanh toán</button>
 
 </div>
