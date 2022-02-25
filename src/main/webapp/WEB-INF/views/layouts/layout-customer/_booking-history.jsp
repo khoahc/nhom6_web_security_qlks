@@ -67,6 +67,20 @@
 	</tbody>
 	
 	<script>
+		function addBookingToBill(idBooking) {
+			let url = "<%=request.getContextPath()%>/aip/customer-add-booking-to-bill";
+		    
+		    $.post(
+		    	url,
+		    	{
+		    		idBooking: idBooking
+		    	},
+		    	function(data) {
+		    		console.log(data);
+		    	}
+		    )
+		}
+	
 		function getBookingHistory(statusPay) {
 			let table = document.getElementById("tb-booking-history");
 		    table.innerHTML = '';
@@ -84,6 +98,9 @@
 					        
 					        let checkBox = document.createElement('input');
 					        checkBox.type = 'checkbox';
+					        checkBox.addEventListener("click", () => {
+					        	addBookingToBill(data[i].idBooking);
+					        });
 							if (statusPay == 'paid') {
 								checkBox.hidden = true;
 							}
@@ -113,14 +130,28 @@
 			getBookingHistory('unpaid');
 		}
 		
-		function payBooking() {
+		function payBookingsOnline() {
 			let table = document.getElementById("tb-booking-history");
 		    
+			let idBookings = [];
+			
 		    table.childNodes.forEach((item, index, arr) => {
 		    	if (item.childNodes[0].childNodes[0].checked == true) {
-		    		console.log('true');
+		    		idBookings.push(item.childNodes[1].innerText)
 		    	}
 		    });
+		    
+		    let url = "<%=request.getContextPath()%>/aip/customer-pay-bookings-online";
+		    
+		    $.post(
+		    	url,
+		    	{
+		    		data: idBookings
+		    	},
+		    	function(data) {
+		    		console.log(data);
+		    	}
+		    )
 		}
 		
 		getUnpaidBookingHistory();
@@ -130,6 +161,6 @@
 	</table>
 </div>
 
-<button onclick="payBooking()">Thanh toán</button>
+<button onclick="payBookingsOnline()" class="btn">Thanh toán</button>
 
 </div>
