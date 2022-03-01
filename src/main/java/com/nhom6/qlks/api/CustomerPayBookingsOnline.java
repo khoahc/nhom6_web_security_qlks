@@ -2,7 +2,10 @@ package com.nhom6.qlks.api;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -11,9 +14,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
 
+import com.nhom6.qlks.hibernate.daos.HoaDonDao;
+import com.nhom6.qlks.hibernate.pojo.Booking;
+import com.nhom6.qlks.hibernate.pojo.HoaDon;
+import com.nhom6.qlks.hibernate.pojo.User;
 import com.nhom6.qlks.utils.Utils;
 
 import com.google.gson.Gson;
@@ -51,14 +59,20 @@ public class CustomerPayBookingsOnline extends HttpServlet {
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		
-		String idBookingStr = request.getParameter("idBookings");
-		System.out.println("idBookings: " + idBookingStr);
+		HttpSession session = request.getSession(true);
+		List<Booking> billDetail = (List<Booking>) session.getAttribute("billDetail");
 		
+		User user = (User) session.getAttribute("user");
+		
+		HoaDonDao hoaDonDao = new HoaDonDao();
+		HoaDon hoaDon = new HoaDon();
+		hoaDon.setUser(user);
+		
+		Date currentDate = new Date();
+		hoaDon.setNgayTao(currentDate);
+
 		Hashtable<String, Object> rs = new Hashtable<String, Object>();
-		
-		String totalPrice = "500000";
-		
-		JSONObject json = Utils.payByMomo(totalPrice, getBaseUrl(request));
+		JSONObject json = hoaDonDao.insertHoaDonOnline(hoaDon, billDetail, getBaseUrl(request));
 		if ((int)json.get("errorCode") == 0) {
 			rs.put("statusCode", 200);
 			rs.put("payUrl", json.get("payUrl"));
@@ -66,7 +80,6 @@ public class CustomerPayBookingsOnline extends HttpServlet {
 			rs.put("statusCode", 404);
 			rs.put("msg", "Có lỗi xảy ra, vui lòng thử lại");
 		};
-		System.out.println("domain: " + getBaseUrl(request));
 		
 		PrintWriter out = response.getWriter();
 		String rsStr = this.gson.toJson(rs);

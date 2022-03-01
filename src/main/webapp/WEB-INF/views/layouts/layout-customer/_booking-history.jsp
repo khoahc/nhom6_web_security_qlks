@@ -67,6 +67,19 @@
 	</tbody>
 	
 	<script>
+		function formatMoney(number) {
+			let numStr = number.toString();
+			let len = numStr.length;
+			let n = len/3 - 1;
+			let numStrRev = numStr.split("").reverse().join("");
+			for (var i = 0; i < n; i++) {
+				let j = 3 + i*4;
+			    numStrRev = numStrRev.slice(0, j) + "," + numStrRev.slice(j);
+			}
+			
+			return numStrRev = numStrRev.split("").reverse().join("");
+		}
+	
 		function addBookingToBill(idBooking) {
 			let url = "<%=request.getContextPath()%>/aip/customer-add-booking-to-bill";
 		    
@@ -77,7 +90,7 @@
 		    	},
 		    	function(data) {
 		    		console.log(data);
-		    		document.getElementById("total-price").innerText = data.totalPrice;
+		    		document.getElementById("total-price").innerText = formatMoney(data.totalPrice);
 		    	}
 		    )
 		}
@@ -114,7 +127,7 @@
 					        r.insertCell(count++).innerText = data[i].soNguoi;
 					        r.insertCell(count++).innerText = data[i].checkIn;
 					        r.insertCell(count++).innerText = data[i].checkOut;
-					        r.insertCell(count++).innerText = data[i].donGia;
+					        r.insertCell(count++).innerText = formatMoney(data[i].donGia) + " VNĐ";
 					    }
 					});
 		}
@@ -168,5 +181,7 @@
 </div>
 <p>Tổng tiền: <strong id="total-price">0</strong> <strong>VNĐ</strong></p>
 <button onclick="payBookingsOnline()" class="btn">Thanh toán</button>
+<br><br>
+<p id="notify">${msg}</p>
 
 </div>

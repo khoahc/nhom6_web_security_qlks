@@ -73,6 +73,11 @@ public class UserFilterCustomer extends HttpFilter implements Filter {
 			return;
 		}
 		
+		if (servletPath.startsWith("/momo")) {
+			chain.doFilter(request, response);
+			return;
+		}
+		
 		if (servletPath.startsWith("/static")) {
 			chain.doFilter(request, response);
 			return;

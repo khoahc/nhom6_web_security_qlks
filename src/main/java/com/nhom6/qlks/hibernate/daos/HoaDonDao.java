@@ -1,5 +1,6 @@
 package com.nhom6.qlks.hibernate.daos;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -7,15 +8,17 @@ import javax.persistence.Query;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.json.JSONObject;
 
 import com.nhom6.qlks.hibernate.HibernateUtils;
 import com.nhom6.qlks.hibernate.pojo.Booking;
 import com.nhom6.qlks.hibernate.pojo.HoaDon;
 import com.nhom6.qlks.hibernate.pojo.TrangThai;
 import com.nhom6.qlks.hibernate.pojo.User;
+import com.nhom6.qlks.utils.Utils;
 
 public class HoaDonDao {
-	public String inserHoaDon(HoaDon hoaDon, List<Booking> billDetail) {
+	public String insertHoaDon(HoaDon hoaDon, List<Booking> billDetail) {
 		String err_msg = "";
         
         Transaction transaction = null;
@@ -49,6 +52,61 @@ public class HoaDonDao {
         	   session.close();
         }
         return err_msg;
+	}
+	
+	public JSONObject insertHoaDonOnline(HoaDon hoaDon, List<Booking> billDetail, String domainName) {
+		JSONObject json = null;
+        
+        Transaction transaction = null;
+        Session session = HibernateUtils.getFactory().openSession();
+        
+        try {
+            // start a transaction
+            transaction = session.beginTransaction();            
+            System.out.println("created transaction");
+            
+            // save the student object
+            session.save(hoaDon);       
+            System.out.println("saved user");
+            
+            String roomNames = "";
+    		for (Booking bk : billDetail) {
+    			roomNames += " " + bk.getPhong().getTenPhong();
+    		}
+    		
+    		float totalPriceBill = 0;
+    		for (Booking bk : billDetail) {
+    			totalPriceBill += Utils.calcTotalPriceBooking(bk);
+    		}
+    		DecimalFormat df = new DecimalFormat("#.####");
+//    		String totalPriceBillStr = Float.toString(totalPriceBill);
+    		String totalPriceBillStr = df.format(totalPriceBill);
+    		
+    		json = Utils.payByMomo(totalPriceBillStr, domainName, roomNames, hoaDon);
+    		if ((int)json.get("errorCode") == 0) {
+    			BookingDao bookingDao = new BookingDao();
+                bookingDao.payBookings(billDetail, hoaDon, session);
+                
+                // commit transaction
+                transaction.commit();
+                System.out.println("commited transaction");
+    		} else {
+    			System.out.println("roll back transaction");
+                transaction.rollback();
+    		};
+            
+            
+        } catch (Exception e) {
+            if (transaction != null) {
+            	System.out.println("roll back transaction");
+                transaction.rollback();
+                json = null;
+            }
+            e.printStackTrace();
+        } finally {
+        	   session.close();
+        }
+        return json;
 	}
 	
 	public String updateHoaDon(int id,Date ngaytao) {
@@ -99,8 +157,13 @@ public class HoaDonDao {
             transaction = session.beginTransaction();            
             System.out.println("created transaction");
             
-            Query query = session.createQuery("DELETE FROM HoaDon WHERE idHD=:id");
+            HoaDon hd = getHoaDonById(id);
+            
+            Query query = session.createQuery("DELETE FROM HoaDon WHERE idHD=:id;"
+            		+ "UPDATE Booking SET hoaDon=:value  WHERE hoaDon=:hoaDon");
 			query.setParameter("id", id);
+			query.setParameter("value", null);
+			query.setParameter("hoaDon", hd);
 			int result = query.executeUpdate();
 			
             System.out.println("delete HoaDon");

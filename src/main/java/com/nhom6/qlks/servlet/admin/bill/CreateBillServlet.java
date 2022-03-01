@@ -82,7 +82,7 @@ public class CreateBillServlet extends HttpServlet {
 		Date currentDate = new Date();
 		hoaDon.setNgayTao(currentDate);
 
-		String err_msg = hoaDonDao.inserHoaDon(hoaDon, billDetail);
+		String err_msg = hoaDonDao.insertHoaDon(hoaDon, billDetail);
 		if (err_msg.equals("successed")) {
 			rs.put("status", 200);
 			rs.put("idHD", hoaDon.getIdHD());

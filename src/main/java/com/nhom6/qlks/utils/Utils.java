@@ -119,17 +119,17 @@ public class Utils {
 		return new JSONObject(responseBody);
 	}
 	
-	public static JSONObject payByMomo(String totalPrice, String domain) {
+	public static JSONObject payByMomo(String totalPrice, String domain, String roomNames, HoaDon bill) {
 		// domain = 'http://14.160.134.135:65001/'
 		String endpoint = "https://test-payment.momo.vn/gw_payment/transactionProcessor";
 		String partnerCode = "MOMOIQA420180417";
 		String accessKey = "Q8gbQHeDesB2Xs0t";
 		String serectkey = "PPuDXq1KowPT1ftR8DvlQTHhC03aul17";
-		String orderInfo = "Thanh toán tiềm thuê phòng";
+		String orderInfo = "Thanh toán tiềm thuê phòng".concat(roomNames);
 		String returnUrl = domain + "/momo/return";
 		String notifyurl = domain + "/api/momo/notify";
 		String amount = (totalPrice);
-		String orderId = UUID.randomUUID().toString();
+		String orderId = Integer.toString(bill.getIdHD());
 		String requestId = UUID.randomUUID().toString();
 		System.out.println(orderId + " ..." + requestId);
 		String requestType = "captureMoMoWallet";

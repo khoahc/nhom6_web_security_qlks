@@ -17,11 +17,11 @@
     <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
     <!-- link icon favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="static/image/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="<%=request.getContextPath()%>/static/image/favicon-32x32.png">
     <!-- custom css file link  -->
-    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/static/css/style.css">
 
-    <script src="static/js/script.js"></script>
+    <script src="<%=request.getContextPath()%>/static/js/script.js"></script>
 </head>
 <body>
 	<jsp:include page="/WEB-INF/views/layouts/layout-customer/_header.jsp"></jsp:include>
