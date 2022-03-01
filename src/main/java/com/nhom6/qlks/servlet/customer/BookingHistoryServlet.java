@@ -1,6 +1,7 @@
 package com.nhom6.qlks.servlet.customer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -39,6 +40,10 @@ public class BookingHistoryServlet extends HttpServlet {
 		
 		HttpSession session = request.getSession();
 		User user =(User) session.getAttribute("user");
+		
+		List<Booking> billDetail = new ArrayList<Booking>();
+		
+		session.setAttribute("billDetail", billDetail);
 		
 		String payStatus = request.getParameter("pay");
 		

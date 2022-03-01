@@ -12,6 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
+import com.nhom6.qlks.utils.Utils;
+
 import com.google.gson.Gson;
 
 /**
@@ -48,14 +52,34 @@ public class CustomerPayBookingsOnline extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 		
 		String idBookingStr = request.getParameter("idBookings");
-		System.out.println(idBookingStr);
+		System.out.println("idBookings: " + idBookingStr);
 		
 		Hashtable<String, Object> rs = new Hashtable<String, Object>();
+		
+		String totalPrice = "500000";
+		
+		JSONObject json = Utils.payByMomo(totalPrice, getBaseUrl(request));
+		if ((int)json.get("errorCode") == 0) {
+			rs.put("statusCode", 200);
+			rs.put("payUrl", json.get("payUrl"));
+		} else {
+			rs.put("statusCode", 404);
+			rs.put("msg", "Có lỗi xảy ra, vui lòng thử lại");
+		};
+		System.out.println("domain: " + getBaseUrl(request));
 		
 		PrintWriter out = response.getWriter();
 		String rsStr = this.gson.toJson(rs);
 		out.write(rsStr);
 		out.flush();
 	}
+	
+	public static String getBaseUrl(HttpServletRequest request) {
+	    String scheme = request.getScheme() + "://";
+	    String serverName = request.getServerName();
+	    String serverPort = (request.getServerPort() == 80) ? "" : ":" + request.getServerPort();
+	    String contextPath = request.getContextPath();
+	    return scheme + serverName + serverPort + contextPath;
+	  }
 
 }

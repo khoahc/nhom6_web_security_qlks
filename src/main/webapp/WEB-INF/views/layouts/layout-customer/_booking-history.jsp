@@ -77,6 +77,7 @@
 		    	},
 		    	function(data) {
 		    		console.log(data);
+		    		document.getElementById("total-price").innerText = data.totalPrice;
 		    	}
 		    )
 		}
@@ -150,6 +151,11 @@
 		    	},
 		    	function(data) {
 		    		console.log(data);
+		    		if (data.statusCode == 200) {
+		    			window.open(data.payUrl);
+		    		} else {
+		    			alert(data.msg);
+		    		}
 		    	}
 		    )
 		}
@@ -160,7 +166,7 @@
 	    
 	</table>
 </div>
-
+<p>Tổng tiền: <strong id="total-price">0</strong> <strong>VNĐ</strong></p>
 <button onclick="payBookingsOnline()" class="btn">Thanh toán</button>
 
 </div>
