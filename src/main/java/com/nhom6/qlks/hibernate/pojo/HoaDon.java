@@ -3,6 +3,7 @@ package com.nhom6.qlks.hibernate.pojo;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,6 +24,9 @@ public class HoaDon implements Serializable {
 	@Column(name = "id_HD", nullable = false)
 	private int idHD;
 	
+	@Column(name = "order_id")
+	private String orderId;
+
 	@Column(name = "ngay_tao")
 	private Date ngayTao;
 	
@@ -39,6 +43,15 @@ public class HoaDon implements Serializable {
 
 	public void setIdHD(int idHD) {
 		this.idHD = idHD;
+	}
+	
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
 	}
 
 	public Date getNgayTao() {

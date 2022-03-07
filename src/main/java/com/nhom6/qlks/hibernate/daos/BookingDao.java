@@ -427,7 +427,7 @@ public class BookingDao {
 		
 		Query q = session.createQuery("FROM Booking "
 				+ "WHERE user.id LIKE :idUser "
-				+ "AND hoaDon is null");//HQL
+				+ "AND hoaDon is not null");//HQL
 		
 		q.setParameter("idUser",  idUser );
 		

@@ -3,6 +3,7 @@ package com.nhom6.qlks.utils;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.security.MessageDigest;
@@ -128,10 +129,9 @@ public class Utils {
 		String orderInfo = "Thanh toán tiềm thuê phòng".concat(roomNames);
 		String returnUrl = domain + "/momo/return";
 		String notifyurl = domain + "/api/momo/notify";
-		String amount = (totalPrice);
-		String orderId = Integer.toString(bill.getIdHD());
+		String amount = totalPrice;
+		String orderId = bill.getOrderId();
 		String requestId = UUID.randomUUID().toString();
-		System.out.println(orderId + " ..." + requestId);
 		String requestType = "captureMoMoWallet";
 		String extraData = "merchantName=;merchantId=";
 		
@@ -167,6 +167,7 @@ public class Utils {
 				HttpClient client = HttpClient.newHttpClient();
 				HttpRequest request = (HttpRequest) HttpRequest.newBuilder()
 						.uri(URI.create(endpoint))
+						.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json")
 						.POST(HttpRequest.BodyPublishers.ofString(requestBody))
 						.build();
 				

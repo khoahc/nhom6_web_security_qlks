@@ -1,6 +1,8 @@
 package com.nhom6.qlks.momo;
 
 import java.io.IOException;
+
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,7 +29,12 @@ public class MomoNotifySevlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+//		response.getWriter().append("Served at: ").append(request.getContextPath());
+		
+		String errorCode = request.getParameter("errorCode");
+		System.out.println(errorCode);
+		String msg = request.getParameter("localMessage");
+		System.out.println("Notify: {0}".formatted(msg));
 	}
 
 	/**
@@ -35,7 +42,12 @@ public class MomoNotifySevlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		doGet(request, response);
+		
+		String errorCode = request.getParameter("errorCode");
+		System.out.println(errorCode);
+		String msg = request.getParameter("localMessage");
+		System.out.println("Notify: {0}".formatted(msg));
+		
 	}
 
 }

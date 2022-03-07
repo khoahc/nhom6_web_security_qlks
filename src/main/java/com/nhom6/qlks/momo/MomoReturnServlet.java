@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nhom6.qlks.hibernate.daos.HoaDonDao;
+
 /**
  * Servlet implementation class MomoReturnServlet
  */
@@ -31,15 +33,19 @@ public class MomoReturnServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		String errorCode = request.getParameter("errorCode");
 		System.out.println(errorCode);
-		String msg = request.getParameter("message");
+		String msg = request.getParameter("localMessage");
 		System.out.println(msg);
 		if (errorCode == "0") {
-			request.setAttribute("msg", "Thanh toán thành công");
+			
 		} else {
-			request.setAttribute("msg", msg);
+			String orderId = request.getParameter("orderId");
+			System.out.println("Delete: " + orderId);
+			new HoaDonDao().deleteHoaDon(orderId);
 		}
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/customer/booking-history.jsp");
-		dispatcher.forward(request, response);
+		request.setAttribute("msg", msg);
+		response.sendRedirect(request.getContextPath().concat("/booking-history"));
+//		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/customer/booking-history.jsp");
+//		dispatcher.forward(request, response);
 		return;
 	}
 

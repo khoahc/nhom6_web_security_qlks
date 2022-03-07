@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -67,6 +68,9 @@ public class CustomerPayBookingsOnline extends HttpServlet {
 		HoaDonDao hoaDonDao = new HoaDonDao();
 		HoaDon hoaDon = new HoaDon();
 		hoaDon.setUser(user);
+		hoaDon.setOrderId(UUID.randomUUID().toString());
+		
+		System.out.println("Order ID: " + hoaDon.getOrderId());
 		
 		Date currentDate = new Date();
 		hoaDon.setNgayTao(currentDate);

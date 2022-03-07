@@ -48,7 +48,18 @@ public class CustomerBookingHistoryAPI extends HttpServlet {
 		String payStatus = request.getParameter("pay");
 		
 		BookingDao bookingDao = new BookingDao();
-		List<Booking> bookings = bookingDao.getBookingsByIdUser(user.getId());
+		
+		List<Booking> bookings;
+		if (payStatus == null || payStatus.equals("unpaid")) {
+			System.out.println("chua thanh toan");
+			bookings = bookingDao.getBookingUnPaidByIdUser(user.getId());
+		} else if(payStatus.equals("paid")) {
+			System.out.println("da thanh toan");
+			bookings = bookingDao.getBookingPaidByIdUser(user.getId());
+		} else {
+			System.out.println("chua thanh toan");
+			bookings = bookingDao.getBookingUnPaidByIdUser(user.getId());
+		}
 		
 		List<Hashtable<String, Object>> rs = new ArrayList<Hashtable<String, Object>>();
 		

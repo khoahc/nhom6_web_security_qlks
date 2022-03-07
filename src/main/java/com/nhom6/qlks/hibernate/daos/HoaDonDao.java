@@ -159,11 +159,8 @@ public class HoaDonDao {
             
             HoaDon hd = getHoaDonById(id);
             
-            Query query = session.createQuery("DELETE FROM HoaDon WHERE idHD=:id;"
-            		+ "UPDATE Booking SET hoaDon=:value  WHERE hoaDon=:hoaDon");
+            Query query = session.createQuery("DELETE FROM HoaDon WHERE idHD=:id;");
 			query.setParameter("id", id);
-			query.setParameter("value", null);
-			query.setParameter("hoaDon", hd);
 			int result = query.executeUpdate();
 			
             System.out.println("delete HoaDon");
@@ -184,6 +181,64 @@ public class HoaDonDao {
         	   session.close();
         }
         return err_msg;
+	}
+	
+	public String deleteHoaDon(String orderId) {
+		String err_msg = "";
+		
+		Transaction transaction = null;
+        Session session = HibernateUtils.getFactory().openSession();
+        
+        try {
+            // start a transaction
+            transaction = session.beginTransaction();            
+            System.out.println("created transaction");
+            
+            HoaDon hd = getHoaDonByOrderId(orderId);
+            System.out.println("Hoa don muon xoa: " + hd.getOrderId());
+            Query query1 = session.createQuery("UPDATE Booking SET hoaDon = NULL WHERE hoaDon=:hoaDon");
+			query1.setParameter("hoaDon", hd);
+			int result1 = query1.executeUpdate();
+            
+            Query query = session.createQuery("DELETE FROM HoaDon WHERE orderId=:orderId");
+			query.setParameter("orderId", orderId);
+			int result = query.executeUpdate();
+			
+            System.out.println("delete HoaDon");
+            
+            // commit transaction
+            transaction.commit();
+            System.out.println("commited transaction");
+            
+            err_msg = "successed";
+        } catch (Exception e) {
+            if (transaction != null) {
+            	System.out.println("roll back transaction");
+                transaction.rollback();
+                err_msg = "failed";
+            }
+            e.printStackTrace();
+        } finally {
+        	   session.close();
+        }
+        return err_msg;
+	}
+	
+	public HoaDon getHoaDonByOrderId(String orderId) {
+		Session session = HibernateUtils.getFactory().openSession();
+		Query q = session.createQuery("FROM HoaDon WHERE orderId=:orderId");//HQL
+		
+		q.setParameter("orderId", orderId);
+		q.setFirstResult(0);
+		q.setMaxResults(1);
+		
+		List<HoaDon> hoadons = q.getResultList();
+		
+		if (hoadons.size() > 0) {
+			return hoadons.get(0);
+		}
+		
+		return null;
 	}
 	
 	public List<HoaDon> getAllHoaDon() {
